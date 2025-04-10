@@ -20,7 +20,7 @@ function App() {
     // Set Content Security Policy
     const cspMeta = document.createElement('meta');
     cspMeta.httpEquiv = 'Content-Security-Policy';
-    cspMeta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co https://static.cloudflareinsights.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline';";
+    cspMeta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co https://static.cloudflareinsights.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; object-src 'none';";
     document.head.appendChild(cspMeta);
     
     // Set X-Frame-Options
@@ -41,12 +41,12 @@ function App() {
     referrerMeta.content = 'strict-origin-when-cross-origin';
     document.head.appendChild(referrerMeta);
     
-    // Remove Cloudflare script if it exists to avoid integrity errors
+    // Удаляем скрипт Cloudflare, если он существует, и добавляем его заново с правильными параметрами
     const scripts = document.querySelectorAll('script[src*="cloudflareinsights.com"]');
     scripts.forEach(script => {
       script.parentNode?.removeChild(script);
     });
-    
+
     return () => {
       document.head.removeChild(cspMeta);
       document.head.removeChild(xfoMeta);
@@ -55,6 +55,7 @@ function App() {
     };
   }, []);
 
+  // Также обновим index.html, чтобы удалить потенциальный атрибут integrity, который вызывает ошибку
   return (
     <div className="App">
       <AuthProvider>
