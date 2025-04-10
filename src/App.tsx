@@ -60,6 +60,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<Navigate to="/auth" replace />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route
               path="/*"
@@ -68,7 +69,7 @@ function App() {
                   <Header />
                   <div className="content-container">
                     <Routes>
-                      <Route path="/" element={<Index />} />
+                      <Route path="/home" element={<Index />} />
                       <Route path="/calendar" element={<CalendarPage />} />
                       <Route path="/events" element={<EventsPage />} />
                       <Route path="/events/:id" element={<EventDetailPage />} />

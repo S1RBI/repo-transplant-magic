@@ -26,7 +26,7 @@ const Header = () => {
   return (
     <header className="bg-white shadow-sm border-b py-3">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/home" className="flex items-center gap-2">
           <div className="w-10 h-10 bg-volunteer-purple rounded-full flex items-center justify-center">
             <span className="text-white font-bold text-xl">V</span>
           </div>
@@ -34,7 +34,7 @@ const Header = () => {
         </Link>
         
         <nav className="hidden md:flex space-x-6">
-          <Link to="/" className="text-gray-700 hover:text-volunteer-purple transition-colors">
+          <Link to="/home" className="text-gray-700 hover:text-volunteer-purple transition-colors">
             Главная
           </Link>
           <Link to="/calendar" className="text-gray-700 hover:text-volunteer-purple transition-colors">

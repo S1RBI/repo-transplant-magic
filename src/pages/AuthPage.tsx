@@ -30,7 +30,7 @@ const AuthPage = () => {
       const result = await signIn(loginEmail, loginPassword);
       
       if (!result?.error) {
-        navigate('/events');
+        navigate('/home');
       }
     } finally {
       setLoginLoading(false);
@@ -51,7 +51,7 @@ const AuthPage = () => {
       const result = await signUp(registerEmail, registerPassword, registerName);
       
       if (!result?.error) {
-        navigate('/events');
+        navigate('/home');
       }
     } finally {
       setRegisterLoading(false);
