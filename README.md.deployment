@@ -1,0 +1,74 @@
+
+# Deployment Instructions
+
+This document contains instructions for deploying the Volunteer Activity Tracking System to various hosting platforms.
+
+## Preparation
+
+1. Build the project:
+   ```bash
+   npm run build
+   ```
+
+2. Prepare deployment files:
+   ```bash
+   node deploy.js
+   ```
+
+## Deployment Options
+
+### Option 1: SpaceWeb Hosting
+
+1. Log in to your SpaceWeb control panel
+2. Navigate to the file manager
+3. Upload all files from the `dist` directory to your web root directory (usually `public_html`)
+4. Ensure PHP version is set to 7.4+ (if you're using PHP)
+5. If using a subdomain, configure it in the SpaceWeb control panel
+6. Make sure .htaccess file is allowed and working
+
+### Option 2: Other Shared Hosting
+
+1. Upload all files from the `dist` directory to your web root directory
+2. Ensure the .htaccess file is properly uploaded and not ignored
+3. If the hosting uses Nginx instead of Apache, you may need to add these rules to your nginx config:
+   ```
+   location / {
+     try_files $uri $uri/ /index.html;
+   }
+   ```
+
+### Option 3: Node.js Hosting (Heroku, Render, etc.)
+
+1. Upload the entire `dist` directory
+2. Run `npm install` in the deployed directory
+3. Start the server with `node server.js`
+4. For Heroku specifically, you can add a Procfile:
+   ```
+   web: node server.js
+   ```
+
+### Option 4: Static Site Hosting (Netlify, Vercel, GitHub Pages)
+
+1. For Netlify/Vercel: Connect your repository and set the build command to `npm run build`
+2. For manual deployment to these platforms: Upload the contents of the `dist` directory
+3. The `_redirects` file will handle routing on Netlify automatically
+
+## Troubleshooting
+
+- If you encounter 404 errors for routes, ensure that the server is configured to redirect all requests to index.html
+- If API calls fail, check that your Supabase project is properly configured and accessible
+- For CORS issues, verify that your Supabase project has the correct CORS origins set
+
+## Environment
+
+The application is configured to work with the following environment:
+
+- Node.js 16+
+- Modern browsers (Chrome, Firefox, Safari, Edge)
+- Responsive design for mobile and desktop
+
+## Security Considerations
+
+- The application uses CSP headers to improve security
+- Make sure your hosting environment supports HTTPS
+- If you're using a custom domain, ensure SSL is properly configured

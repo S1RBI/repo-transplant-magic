@@ -1,3 +1,21 @@
+
+User-agent: *
+Allow: /
+
+Disallow: /auth/
+Disallow: /profile/
+
+# Block common malicious bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+# Common crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +28,5 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# Sitemaps
+Sitemap: https://your-domain.com/sitemap.xml

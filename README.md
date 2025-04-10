@@ -1,73 +1,211 @@
-# Welcome to your Lovable project
 
-## Project info
+# Система учета волонтерской активности
 
-**URL**: https://lovable.dev/projects/5f2dbf40-1913-4c5f-abe6-03a1d718ccab
+## Описание проекта
 
-## How can I edit this code?
+Система учета волонтерской активности - это веб-приложение для управления волонтерской деятельностью, включающее регистрацию волонтеров на мероприятия, отслеживание участия и генерацию статистики.
 
-There are several ways of editing your application.
+### Функциональные возможности:
 
-**Use Lovable**
+- Регистрация волонтеров на мероприятия
+- Управление мероприятиями (создание, редактирование, удаление)
+- Просмотр календаря мероприятий
+- Отслеживание статистики волонтерской активности
+- Просмотр подробной информации о мероприятиях
+- Автоматическое обновление статусов мероприятий и участия при завершении мероприятий
+- Автоматический учет волонтерских часов и посещенных мероприятий
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5f2dbf40-1913-4c5f-abe6-03a1d718ccab) and start prompting.
+## Структура базы данных
 
-Changes made via Lovable will be committed automatically to this repo.
+### Таблицы базы данных
 
-**Use your preferred IDE**
+1. **Volunteers (Волонтеры)**
+   - id (PK)
+   - name (имя волонтера)
+   - email (электронная почта)
+   - phone (телефон)
+   - skills (навыки)
+   - joinedDate (дата регистрации)
+   - totalHours (общее количество часов)
+   - eventsAttended (количество посещенных мероприятий)
+   - avatar (фото)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. **Organizers (Организаторы)**
+   - id (PK)
+   - name (имя организатора)
+   - email (электронная почта)
+   - phone (телефон)
+   - organization (название организации)
+   - logo (логотип)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. **Events (Мероприятия)**
+   - id (PK)
+   - title (название)
+   - description (описание)
+   - location (место проведения)
+   - startDate (дата и время начала)
+   - endDate (дата и время окончания)
+   - maxParticipants (максимальное количество участников)
+   - currentParticipants (текущее количество участников)
+   - organizerId (FK - ссылка на организатора)
+   - category (категория)
+   - status (статус)
+   - hours (количество часов)
 
-Follow these steps:
+4. **EventParticipation (Участие в мероприятиях)**
+   - id (PK)
+   - eventId (FK - ссылка на мероприятие)
+   - volunteerId (FK - ссылка на волонтера)
+   - status (статус участия)
+   - hoursLogged (зачтенные часы)
+   - feedback (отзыв)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+5. **Notifications (Уведомления)**
+   - id (PK)
+   - title (заголовок)
+   - message (сообщение)
+   - date (дата создания)
+   - read (прочитано)
+   - type (тип уведомления)
+   - relatedId (связанный идентификатор)
+   - userId (идентификатор пользователя)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### ER-диаграмма
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+Volunteers --< EventParticipation >-- Events
+                                        ^
+                                        |
+                                     Organizers
+                                     
+Volunteers --< Notifications
 ```
 
-**Edit a file directly in GitHub**
+## Автоматизированные процессы
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Обновление статуса мероприятий**
+   - Автоматическое изменение статуса мероприятия на "завершено" после окончания мероприятия
+   - Запускается по расписанию каждый час через cron-задачу
 
-**Use GitHub Codespaces**
+2. **Учет участия и статистики**
+   - Автоматический учет часов волонтеров после завершения мероприятия
+   - Обновление общей статистики волонтера (часы, посещенные мероприятия)
+   - Присвоение уровня волонтера на основе накопленных часов
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3. **Отправка уведомлений**
+   - Уведомления о предстоящих мероприятиях за день до начала
+   - Уведомления о новых доступных мероприятиях
 
-## What technologies are used for this project?
+## API маршруты
 
-This project is built with:
+### Волонтеры
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+| Маршрут | Метод | Описание | Параметры | Заголовки | Коды ответа |
+|---------|-------|----------|-----------|-----------|-------------|
+| /api/volunteers | GET | Получение списка волонтеров | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+| /api/volunteers/:id | GET | Получение информации о волонтере | id (path) | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/volunteers | POST | Создание нового волонтера | name, email, phone, skills | Content-Type: application/json | 201: Создан, 400: Неверный запрос, 500: Ошибка |
+| /api/volunteers/:id | PUT | Обновление информации о волонтере | id (path), name, email, phone, skills | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/volunteers/:id | DELETE | Удаление волонтера | id (path) | - | 204: Успех, 404: Не найден, 500: Ошибка |
 
-## How can I deploy this project?
+### Организаторы
 
-Simply open [Lovable](https://lovable.dev/projects/5f2dbf40-1913-4c5f-abe6-03a1d718ccab) and click on Share -> Publish.
+| Маршрут | Метод | Описание | Параметры | Заголовки | Коды ответа |
+|---------|-------|----------|-----------|-----------|-------------|
+| /api/organizers | GET | Получение списка организаторов | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+| /api/organizers/:id | GET | Получение информации об организаторе | id (path) | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/organizers | POST | Создание нового организатора | name, email, phone, organization | Content-Type: application/json | 201: Создан, 400: Неверный запрос, 500: Ошибка |
+| /api/organizers/:id | PUT | Обновление информации об организаторе | id (path), name, email, phone, organization | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/organizers/:id | DELETE | Удаление организатора | id (path) | - | 204: Успех, 404: Не найден, 500: Ошибка |
 
-## Can I connect a custom domain to my Lovable project?
+### Мероприятия
 
-Yes it is!
+| Маршрут | Метод | Описание | Параметры | Заголовки | Коды ответа |
+|---------|-------|----------|-----------|-----------|-------------|
+| /api/events | GET | Получение списка мероприятий | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+| /api/events/upcoming | GET | Получение предстоящих мероприятий | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+| /api/events/:id | GET | Получение информации о мероприятии | id (path) | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/events | POST | Создание нового мероприятия | title, description, location, startDate, endDate, maxParticipants, organizerId, category, hours | Content-Type: application/json | 201: Создан, 400: Неверный запрос, 500: Ошибка |
+| /api/events/:id | PUT | Обновление информации о мероприятии | id (path), title, description, location, startDate, endDate, maxParticipants, category, hours | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/events/:id | DELETE | Удаление мероприятия | id (path) | - | 204: Успех, 404: Не найден, 500: Ошибка |
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Участие в мероприятиях
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+| Маршрут | Метод | Описание | Параметры | Заголовки | Коды ответа |
+|---------|-------|----------|-----------|-----------|-------------|
+| /api/participations | GET | Получение всех записей об участии | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+| /api/participations/event/:eventId | GET | Получение участников мероприятия | eventId (path) | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/participations/volunteer/:volunteerId | GET | Получение мероприятий волонтера | volunteerId (path) | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/participations/register | POST | Регистрация на мероприятие | eventId, volunteerId | Content-Type: application/json | 201: Создан, 400: Неверный запрос, 500: Ошибка |
+| /api/participations/cancel | POST | Отмена регистрации | eventId, volunteerId | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/participations/confirm/:id | PUT | Подтверждение участия | id (path) | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/participations/attend/:id | PUT | Отметка о присутствии | id (path), hoursLogged | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+
+### Статистика
+
+| Маршрут | Метод | Описание | Параметры | Заголовки | Коды ответа |
+|---------|-------|----------|-----------|-----------|-------------|
+| /api/stats/volunteer/:id | GET | Получение статистики волонтера | id (path) | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/stats/events | GET | Получение статистики по мероприятиям | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+| /api/stats/ranking | GET | Получение рейтинга волонтеров | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+
+### Уведомления
+
+| Маршрут | Метод | Описание | Параметры | Заголовки | Коды ответа |
+|---------|-------|----------|-----------|-----------|-------------|
+| /api/notifications | GET | Получение уведомлений пользователя | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+| /api/notifications/mark-read/:id | PUT | Отметка уведомления как прочитанного | id (path) | Content-Type: application/json | 200: Успех, 404: Не найден, 500: Ошибка |
+| /api/notifications/mark-all-read | PUT | Отметка всех уведомлений как прочитанных | - | Content-Type: application/json | 200: Успех, 500: Ошибка |
+
+## Технологический стек
+
+- **Фронтенд**: React, TypeScript, Tailwind CSS, shadcn/ui
+- **Маршрутизация**: React Router
+- **Управление состоянием**: React Query
+- **Визуализация данных**: Recharts
+- **База данных**: PostgreSQL (Supabase)
+- **Формы и валидация**: React Hook Form, Zod
+- **Облачные функции**: Supabase Edge Functions
+
+## Инструкция по развертыванию
+
+### Требования к системе
+
+- Node.js (версия 14 или выше)
+- npm (версия 6 или выше)
+- Аккаунт Supabase для базы данных
+
+### Установка и запуск
+
+1. Клонируйте репозиторий:
+   ```bash
+   git clone <URL_репозитория>
+   cd <название_проекта>
+   ```
+
+2. Установите зависимости:
+   ```bash
+   npm install
+   ```
+
+3. Настройте переменные окружения, создав файл `.env`:
+   ```bash
+   VITE_SUPABASE_URL=ваш_url_supabase
+   VITE_SUPABASE_KEY=ваш_публичный_ключ_supabase
+   ```
+
+4. Запустите приложение в режиме разработки:
+   ```bash
+   npm run dev
+   ```
+
+5. Для сборки проекта:
+   ```bash
+   npm run build
+   ```
+
+## Особенности системы
+
+- **Автоматическое обновление статусов:** Система автоматически обновляет статусы мероприятий и участников по расписанию
+- **Расчет статистики:** Статистика волонтеров (часы, уровень, рейтинг) рассчитывается автоматически
+- **Уведомления:** Система отправляет уведомления о новых и предстоящих мероприятиях
