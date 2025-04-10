@@ -13,6 +13,7 @@ import StatsPage from '@/pages/StatsPage';
 import NotFound from '@/pages/NotFound';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Toaster } from "@/components/ui/toaster";
+import WelcomePage from '@/pages/WelcomePage';
 
 function App() {
   // Set security-related meta tags dynamically
@@ -61,6 +62,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/welcome" element={<WelcomePage />} />
             <Route
               path="/*"
               element={
