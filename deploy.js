@@ -38,7 +38,7 @@ const PORT = process.env.PORT || 3000;
 app.use(compression());
 
 // Serve static files from 'dist' directory
-app.use(express.static('dist'));
+app.use(express.static('.'));
 
 // Log all requests to help with debugging
 app.use((req, res, next) => {
@@ -57,7 +57,7 @@ app.get('/favicon.ico', (req, res) => {
 // Fallback to index.html for SPA routing
 app.get('*', (req, res) => {
   console.log(\`Serving index.html for route: \${req.originalUrl}\`);
-  res.sendFile(resolve(__dirname, 'dist', 'index.html'));
+  res.sendFile(resolve(__dirname, 'index.html'));
 });
 
 app.listen(PORT, () => {
@@ -96,6 +96,9 @@ fs.writeFileSync(path.join('dist', 'server.js'), serverCode);
 // Write PHP fallback for shared hosting
 fs.writeFileSync(path.join('dist', 'index.php'), phpFallbackCode);
 
+// Make a copy of index.html in the root to ensure routing works properly
+fs.copyFileSync(path.join('dist', 'index.html'), path.join('dist', 'index.php'));
+
 // Copy htaccess and redirects
 try {
   fs.copyFileSync(path.join('public', '.htaccess'), path.join('dist', '.htaccess'));
@@ -104,6 +107,7 @@ try {
   console.log('Deployment files created successfully in dist directory.');
   console.log('For shared hosting (like SpaceWeb): Upload the contents of the dist folder to your hosting root directory.');
   console.log('For Node.js hosting: Upload the dist folder and run "npm install" followed by "node server.js".');
+  console.log('\nПОДСКАЗКА: Для успешной работы на простом хостинге, загружайте все файлы из папки dist, а не исходные файлы проекта.');
 } catch (err) {
   console.warn('Warning: Some files could not be copied. This is OK if you\'re not using all hosting types.');
 }
