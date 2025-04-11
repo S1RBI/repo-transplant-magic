@@ -37,7 +37,7 @@ const PORT = process.env.PORT || 3000;
 // Enable compression
 app.use(compression());
 
-// Serve static files from 'dist' directory
+// Serve static files from current directory
 app.use(express.static('.'));
 
 // Log all requests to help with debugging
@@ -87,6 +87,24 @@ if (!fs.existsSync('dist')) {
   process.exit(1);
 }
 
+// Function to update HTML files to use the correct path after build
+function updateHtmlScriptPaths(filePath) {
+  try {
+    let html = fs.readFileSync(filePath, 'utf-8');
+    
+    // Replace source path with built path
+    html = html.replace(
+      /<script type="module" src="\/src\/main\.tsx"><\/script>/g, 
+      '<script type="module" src="./assets/main.js"></script>'
+    );
+    
+    fs.writeFileSync(filePath, html);
+    console.log(`Updated script paths in ${filePath}`);
+  } catch (err) {
+    console.error(`Error updating ${filePath}:`, err);
+  }
+}
+
 // Write deployment package.json
 fs.writeFileSync(path.join('dist', 'package.json'), JSON.stringify(packageJson, null, 2));
 
@@ -96,7 +114,10 @@ fs.writeFileSync(path.join('dist', 'server.js'), serverCode);
 // Write PHP fallback for shared hosting
 fs.writeFileSync(path.join('dist', 'index.php'), phpFallbackCode);
 
-// Make a copy of index.html in the root to ensure routing works properly
+// Update HTML files in dist to use correct script paths
+updateHtmlScriptPaths(path.join('dist', 'index.html'));
+
+// Make a copy of index.html with PHP extension for fallback
 fs.copyFileSync(path.join('dist', 'index.html'), path.join('dist', 'index.php'));
 
 // Copy htaccess and redirects
