@@ -39,8 +39,15 @@ app.use(compression());
 // Serve static files from 'dist' directory
 app.use(express.static('dist'));
 
+// Log all requests to help with debugging
+app.use((req, res, next) => {
+  console.log(\`\${new Date().toISOString()} - \${req.method} \${req.originalUrl}\`);
+  next();
+});
+
 // Fallback to index.html for SPA routing
 app.get('*', (req, res) => {
+  console.log(\`Serving index.html for route: \${req.originalUrl}\`);
   res.sendFile(resolve(__dirname, 'dist', 'index.html'));
 });
 

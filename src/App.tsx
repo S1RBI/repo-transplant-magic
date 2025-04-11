@@ -55,7 +55,11 @@ function App() {
     };
   }, []);
 
-  // Также обновим index.html, чтобы удалить потенциальный атрибут integrity, который вызывает ошибку
+  // Проверяем, загрузилось ли приложение полностью
+  useEffect(() => {
+    console.log('App component mounted');
+  }, []);
+
   return (
     <div className="App">
       <AuthProvider>
