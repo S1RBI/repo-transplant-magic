@@ -39,6 +39,17 @@ enable_strong_password_policy = true
 min_password_length = 10
 require_email_confirmation = true
 
+# Добавляем настройки защиты от перебора
+rate_limit_email_sent = 5  # Ограничение отправки электронных писем
+rate_limit_sms_sent = 3    # Ограничение отправки SMS
+rate_limit_authenticated_requests = 30  # Ограничение для аутентифицированных запросов
+rate_limit_unauthenticated_requests = 10  # Ограничение для неаутентифицированных запросов
+rate_limit_token_refresh = 5  # Ограничение для обновления токенов
+rate_limit_sign_up = 3  # Ограничение на количество регистраций
+rate_limit_sign_in = 5  # Ограничение на количество входов
+max_sign_in_attempts_per_minute = 5  # Максимальное количество попыток входа в минуту
+max_sign_in_attempts_per_hour = 15  # Максимальное количество попыток входа в час
+
 [auth.email]
 enable_signup = true
 double_confirm_changes = true
@@ -58,3 +69,4 @@ minimal_apis = false
 [functions]
 [functions.deepseek-chat]
 verify_jwt = true  # Enable JWT verification for the function
+
