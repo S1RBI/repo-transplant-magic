@@ -1,4 +1,5 @@
 
+# Existing configuration
 project_id = "qrbrrqrtfoltgrcwramh"
 
 [api]
@@ -34,27 +35,29 @@ additional_redirect_urls = ["https://localhost:3000"]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
-# Added security measures
+
+# Enhanced security measures
 enable_strong_password_policy = true
-min_password_length = 10
+min_password_length = 12  # Increased from 10
 require_email_confirmation = true
 
-# Добавляем настройки защиты от перебора
-rate_limit_email_sent = 5  # Ограничение отправки электронных писем
-rate_limit_sms_sent = 3    # Ограничение отправки SMS
-rate_limit_authenticated_requests = 30  # Ограничение для аутентифицированных запросов
-rate_limit_unauthenticated_requests = 10  # Ограничение для неаутентифицированных запросов
-rate_limit_token_refresh = 5  # Ограничение для обновления токенов
-rate_limit_sign_up = 3  # Ограничение на количество регистраций
-rate_limit_sign_in = 5  # Ограничение на количество входов
-max_sign_in_attempts_per_minute = 5  # Максимальное количество попыток входа в минуту
-max_sign_in_attempts_per_hour = 15  # Максимальное количество попыток входа в час
+# Brute-force protection settings
+rate_limit_email_sent = 3  # Reduced from 5
+rate_limit_sms_sent = 2    # Reduced from 3
+rate_limit_authenticated_requests = 20  # Reduced from 30
+rate_limit_unauthenticated_requests = 5  # Reduced from 10
+rate_limit_token_refresh = 3  # Reduced from 5
+rate_limit_sign_up = 2  # Reduced from 3
+rate_limit_sign_in = 3  # Reduced from 5
+max_sign_in_attempts_per_minute = 3  # Reduced from 5
+max_sign_in_attempts_per_hour = 10  # Reduced from 15
 
 [auth.email]
 enable_signup = true
 double_confirm_changes = true
 enable_confirmations = true
 
+# Additional security configurations from previous version
 [analytics]
 enabled = false
 port = 54327
@@ -68,5 +71,4 @@ minimal_apis = false
 
 [functions]
 [functions.deepseek-chat]
-verify_jwt = true  # Enable JWT verification for the function
-
+verify_jwt = true
