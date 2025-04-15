@@ -1,4 +1,3 @@
-
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
@@ -29,6 +28,7 @@ const AuthPage = () => {
   const registerCaptchaRef = useRef<HCaptcha>(null);
 
   const [captchaError, setCaptchaError] = useState<string | null>(null);
+  const [captchaVisible, setCaptchaVisible] = useState<boolean>(false);
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,20 +109,22 @@ const AuthPage = () => {
       setRegisterCaptchaToken(token);
     }
     setCaptchaError(null);
+    setCaptchaVisible(true);
   };
 
   const handleCaptchaError = (err: any) => {
     console.error("hCaptcha error occurred:", err);
     setCaptchaError("Произошла ошибка при загрузке капчи. Пожалуйста, перезагрузите страницу.");
+    setCaptchaVisible(false);
   };
 
   const handleCaptchaExpire = () => {
     console.log("hCaptcha token expired");
     setLoginCaptchaToken(null);
     setRegisterCaptchaToken(null);
+    setCaptchaVisible(false);
   };
   
-  // Log when the component is mounted to help with debugging
   console.log("AuthPage mounted, hCaptcha should initialize now");
   
   return (
@@ -184,10 +186,9 @@ const AuthPage = () => {
                       theme="light"
                       size="normal"
                       reCaptchaCompat={false}
-                      hl="ru"
                     />
                     {captchaError && <p className="text-red-500 mt-2 text-sm">{captchaError}</p>}
-                    {!captchaError && !loginCaptchaToken && (
+                    {!captchaError && !loginCaptchaToken && !captchaVisible && (
                       <p className="text-amber-500 mt-2 text-sm">
                         Если капча не отображается, проверьте блокировщики рекламы и перезагрузите страницу
                       </p>
@@ -269,10 +270,9 @@ const AuthPage = () => {
                       theme="light"
                       size="normal"
                       reCaptchaCompat={false}
-                      hl="ru"
                     />
                     {captchaError && <p className="text-red-500 mt-2 text-sm">{captchaError}</p>}
-                    {!captchaError && !registerCaptchaToken && (
+                    {!captchaError && !registerCaptchaToken && !captchaVisible && (
                       <p className="text-amber-500 mt-2 text-sm">
                         Если капча не отображается, проверьте блокировщики рекламы и перезагрузите страницу
                       </p>

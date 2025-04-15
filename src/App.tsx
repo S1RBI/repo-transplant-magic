@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 import Chatbot from '@/components/Chatbot';
@@ -20,7 +19,7 @@ function App() {
     // Set Content Security Policy with updated hCaptcha domains
     const cspMeta = document.createElement('meta');
     cspMeta.httpEquiv = 'Content-Security-Policy';
-    cspMeta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://cdn.gpteng.co https://*.hcaptcha.com; connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co https://static.cloudflareinsights.com https://*.hcaptcha.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.hcaptcha.com; object-src 'none';";
+    cspMeta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://cdn.gpteng.co https://*.hcaptcha.com; connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co https://static.cloudflareinsights.com https://*.hcaptcha.com https://newassets.hcaptcha.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.hcaptcha.com; object-src 'none';";
     document.head.appendChild(cspMeta);
     
     // Set X-Frame-Options
