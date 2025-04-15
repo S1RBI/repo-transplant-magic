@@ -101,9 +101,25 @@ const AuthPage = () => {
     }
   };
 
+  const handleCaptchaVerify = (token: string, type: 'login' | 'register') => {
+    console.log(`CAPTCHA token received for ${type}:`, token);
+    if (type === 'login') {
+      setLoginCaptchaToken(token);
+    } else {
+      setRegisterCaptchaToken(token);
+    }
+    setCaptchaError(null);
+  };
+
   const handleCaptchaError = () => {
     setCaptchaError("Произошла ошибка при загрузке капчи. Пожалуйста, перезагрузите страницу.");
     console.error("hCaptcha error occurred");
+  };
+
+  const handleCaptchaExpire = () => {
+    console.log("hCaptcha token expired");
+    setLoginCaptchaToken(null);
+    setRegisterCaptchaToken(null);
   };
   
   return (
@@ -154,14 +170,16 @@ const AuthPage = () => {
                       required
                     />
                   </div>
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center py-2">
                     <HCaptcha
                       ref={loginCaptchaRef}
                       sitekey="73a26fa0-3d7c-430a-bb06-2f5ca6bc56ea"
-                      onVerify={setLoginCaptchaToken}
+                      onVerify={(token) => handleCaptchaVerify(token, 'login')}
                       onError={handleCaptchaError}
+                      onExpire={handleCaptchaExpire}
                       theme="light"
                       size="normal"
+                      reCaptchaCompat={false}
                     />
                     {captchaError && <p className="text-red-500 mt-2 text-sm">{captchaError}</p>}
                   </div>
@@ -230,14 +248,16 @@ const AuthPage = () => {
                       required
                     />
                   </div>
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center py-2">
                     <HCaptcha
                       ref={registerCaptchaRef}
                       sitekey="73a26fa0-3d7c-430a-bb06-2f5ca6bc56ea"
-                      onVerify={setRegisterCaptchaToken}
+                      onVerify={(token) => handleCaptchaVerify(token, 'register')}
                       onError={handleCaptchaError}
+                      onExpire={handleCaptchaExpire}
                       theme="light"
                       size="normal"
+                      reCaptchaCompat={false}
                     />
                     {captchaError && <p className="text-red-500 mt-2 text-sm">{captchaError}</p>}
                   </div>
