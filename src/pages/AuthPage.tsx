@@ -111,9 +111,9 @@ const AuthPage = () => {
     setCaptchaError(null);
   };
 
-  const handleCaptchaError = () => {
+  const handleCaptchaError = (err: any) => {
+    console.error("hCaptcha error occurred:", err);
     setCaptchaError("Произошла ошибка при загрузке капчи. Пожалуйста, перезагрузите страницу.");
-    console.error("hCaptcha error occurred");
   };
 
   const handleCaptchaExpire = () => {
@@ -121,6 +121,9 @@ const AuthPage = () => {
     setLoginCaptchaToken(null);
     setRegisterCaptchaToken(null);
   };
+  
+  // Log when the component is mounted to help with debugging
+  console.log("AuthPage mounted, hCaptcha should initialize now");
   
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
@@ -171,6 +174,7 @@ const AuthPage = () => {
                     />
                   </div>
                   <div className="flex flex-col items-center py-2">
+                    <p className="text-sm text-gray-500 mb-2">Пожалуйста, подтвердите, что вы не робот:</p>
                     <HCaptcha
                       ref={loginCaptchaRef}
                       sitekey="73a26fa0-3d7c-430a-bb06-2f5ca6bc56ea"
@@ -180,8 +184,14 @@ const AuthPage = () => {
                       theme="light"
                       size="normal"
                       reCaptchaCompat={false}
+                      hl="ru"
                     />
                     {captchaError && <p className="text-red-500 mt-2 text-sm">{captchaError}</p>}
+                    {!captchaError && !loginCaptchaToken && (
+                      <p className="text-amber-500 mt-2 text-sm">
+                        Если капча не отображается, проверьте блокировщики рекламы и перезагрузите страницу
+                      </p>
+                    )}
                   </div>
                 </CardContent>
                 <CardFooter>
@@ -249,6 +259,7 @@ const AuthPage = () => {
                     />
                   </div>
                   <div className="flex flex-col items-center py-2">
+                    <p className="text-sm text-gray-500 mb-2">Пожалуйста, подтвердите, что вы не робот:</p>
                     <HCaptcha
                       ref={registerCaptchaRef}
                       sitekey="73a26fa0-3d7c-430a-bb06-2f5ca6bc56ea"
@@ -258,8 +269,14 @@ const AuthPage = () => {
                       theme="light"
                       size="normal"
                       reCaptchaCompat={false}
+                      hl="ru"
                     />
                     {captchaError && <p className="text-red-500 mt-2 text-sm">{captchaError}</p>}
+                    {!captchaError && !registerCaptchaToken && (
+                      <p className="text-amber-500 mt-2 text-sm">
+                        Если капча не отображается, проверьте блокировщики рекламы и перезагрузите страницу
+                      </p>
+                    )}
                   </div>
                 </CardContent>
                 <CardFooter>
