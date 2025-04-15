@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,26 @@ const AuthPage = () => {
   const [captchaError, setCaptchaError] = useState<string | null>(null);
   const [captchaVisible, setCaptchaVisible] = useState<boolean>(false);
   
+  useEffect(() => {
+    console.log("AuthPage mounted, checking captcha visibility");
+    const checkCaptchaElements = () => {
+      const captchaElements = document.querySelectorAll('iframe[src*="hcaptcha"]');
+      if (captchaElements.length > 0) {
+        console.log("hCaptcha elements found:", captchaElements.length);
+        setCaptchaVisible(true);
+      } else {
+        console.log("No hCaptcha elements found yet");
+      }
+    };
+    
+    checkCaptchaElements();
+    
+    const observer = new MutationObserver(checkCaptchaElements);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    return () => observer.disconnect();
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -47,17 +67,23 @@ const AuthPage = () => {
     setCaptchaError(null);
     
     try {
+      console.log("Attempting login with email:", loginEmail);
       const result = await signIn(loginEmail, loginPassword, loginCaptchaToken);
       
-      if (!result?.error) {
+      if (result?.data && !result?.error) {
+        console.log("Login successful, navigating to /home");
         navigate('/home');
+      } else {
+        console.log("Login failed:", result?.error);
+        if (loginCaptchaRef.current) {
+          loginCaptchaRef.current.resetCaptcha();
+          setLoginCaptchaToken(null);
+        }
       }
+    } catch (error) {
+      console.error("Login error:", error);
     } finally {
       setLoginLoading(false);
-      setLoginCaptchaToken(null);
-      if (loginCaptchaRef.current) {
-        loginCaptchaRef.current.resetCaptcha();
-      }
     }
   };
   
@@ -122,7 +148,6 @@ const AuthPage = () => {
     console.log("hCaptcha token expired");
     setLoginCaptchaToken(null);
     setRegisterCaptchaToken(null);
-    setCaptchaVisible(false);
   };
   
   console.log("AuthPage mounted, hCaptcha should initialize now");
