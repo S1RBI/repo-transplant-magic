@@ -10,8 +10,8 @@ interface AuthContextType {
   session: Session | null;
   volunteer: Volunteer | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any } | undefined>;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: any } | undefined>;
+  signIn: (email: string, password: string, captchaToken: string) => Promise<{ error: any } | undefined>;
+  signUp: (email: string, password: string, name: string, captchaToken: string) => Promise<{ error: any } | undefined>;
   signOut: () => Promise<void>;
 }
 
@@ -65,12 +65,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const handleSignIn = async (email: string, password: string) => {
-    return signIn(email, password);
+  const handleSignIn = async (email: string, password: string, captchaToken: string) => {
+    return signIn(email, password, captchaToken);
   };
 
-  const handleSignUp = async (email: string, password: string, name: string) => {
-    return signUp(email, password, name);
+  const handleSignUp = async (email: string, password: string, name: string, captchaToken: string) => {
+    return signUp(email, password, name, captchaToken);
   };
 
   const handleSignOut = async () => {
