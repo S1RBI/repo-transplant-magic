@@ -1,4 +1,3 @@
-
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
@@ -102,11 +101,14 @@ export const fetchVolunteerProfile = async (userId: string): Promise<Volunteer |
 };
 
 // Функция для входа в систему
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string, captchaToken: string) => {
   try {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
+      options: {
+        captchaToken
+      }
     });
     
     if (error) {
@@ -127,7 +129,7 @@ export const signIn = async (email: string, password: string) => {
   } catch (error) {
     toast({
       title: 'Ошибка',
-      description: 'Произошла неизвестная ошибка при входе',
+      description: 'Произошла н��известная ошибка при входе',
       variant: 'destructive',
     });
     return { error };
@@ -135,11 +137,10 @@ export const signIn = async (email: string, password: string) => {
 };
 
 // Функция для регистрации
-export const signUp = async (email: string, password: string, name: string) => {
+export const signUp = async (email: string, password: string, name: string, captchaToken: string) => {
   try {
     console.log('Registering user with data:', { email, name });
     
-    // 1. Создаем пользователя в auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -147,6 +148,7 @@ export const signUp = async (email: string, password: string, name: string) => {
         data: {
           full_name: name,
         },
+        captchaToken
       },
     });
     
@@ -159,7 +161,6 @@ export const signUp = async (email: string, password: string, name: string) => {
       return { error };
     }
     
-    // 2. Если пользователь создан успешно, создаем запись в таблице volunteers
     if (data.user) {
       console.log('User created successfully, creating volunteer profile');
       const created = await createVolunteerProfileFromUser(data.user);

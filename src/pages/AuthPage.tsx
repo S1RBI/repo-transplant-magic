@@ -1,6 +1,6 @@
-
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,25 +15,37 @@ const AuthPage = () => {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+  const [loginCaptchaToken, setLoginCaptchaToken] = useState<string | null>(null);
+  const loginCaptchaRef = useRef<HCaptcha>(null);
   
   const [registerName, setRegisterName] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState('');
   const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerCaptchaToken, setRegisterCaptchaToken] = useState<string | null>(null);
+  const registerCaptchaRef = useRef<HCaptcha>(null);
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!loginCaptchaToken) {
+      alert('Пожалуйста, подтвердите, что вы не робот');
+      return;
+    }
+    
     setLoginLoading(true);
     
     try {
-      const result = await signIn(loginEmail, loginPassword);
+      const result = await signIn(loginEmail, loginPassword, loginCaptchaToken);
       
       if (!result?.error) {
         navigate('/home');
       }
     } finally {
       setLoginLoading(false);
+      loginCaptchaRef.current?.resetCaptcha();
+      setLoginCaptchaToken(null);
     }
   };
   
@@ -45,16 +57,23 @@ const AuthPage = () => {
       return;
     }
     
+    if (!registerCaptchaToken) {
+      alert('Пожалуйста, подтвердите, что вы не робот');
+      return;
+    }
+    
     setRegisterLoading(true);
     
     try {
-      const result = await signUp(registerEmail, registerPassword, registerName);
+      const result = await signUp(registerEmail, registerPassword, registerName, registerCaptchaToken);
       
       if (!result?.error) {
         navigate('/home');
       }
     } finally {
       setRegisterLoading(false);
+      registerCaptchaRef.current?.resetCaptcha();
+      setRegisterCaptchaToken(null);
     }
   };
   
@@ -104,6 +123,13 @@ const AuthPage = () => {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       required
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <HCaptcha
+                      ref={loginCaptchaRef}
+                      sitekey="73a26fa0-3d7c-430a-bb06-2f5ca6bc56ea"
+                      onVerify={(token) => setLoginCaptchaToken(token)}
                     />
                   </div>
                 </CardContent>
@@ -169,6 +195,13 @@ const AuthPage = () => {
                       value={registerPasswordConfirm}
                       onChange={(e) => setRegisterPasswordConfirm(e.target.value)}
                       required
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <HCaptcha
+                      ref={registerCaptchaRef}
+                      sitekey="73a26fa0-3d7c-430a-bb06-2f5ca6bc56ea"
+                      onVerify={(token) => setRegisterCaptchaToken(token)}
                     />
                   </div>
                 </CardContent>
