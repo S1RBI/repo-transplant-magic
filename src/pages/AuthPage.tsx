@@ -1,3 +1,4 @@
+
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
@@ -7,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/components/ui/use-toast';
 
 const AuthPage = () => {
   const { signIn, signUp } = useAuth();
@@ -25,16 +27,24 @@ const AuthPage = () => {
   const [registerLoading, setRegisterLoading] = useState(false);
   const [registerCaptchaToken, setRegisterCaptchaToken] = useState<string | null>(null);
   const registerCaptchaRef = useRef<HCaptcha>(null);
+
+  const [captchaError, setCaptchaError] = useState<string | null>(null);
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!loginCaptchaToken) {
-      alert('Пожалуйста, подтвердите, что вы не робот');
+      toast({
+        title: "Ошибка проверки",
+        description: "Пожалуйста, подтвердите, что вы не робот",
+        variant: "destructive"
+      });
+      setCaptchaError("Пожалуйста, подтвердите, что вы не робот");
       return;
     }
     
     setLoginLoading(true);
+    setCaptchaError(null);
     
     try {
       const result = await signIn(loginEmail, loginPassword, loginCaptchaToken);
@@ -44,8 +54,10 @@ const AuthPage = () => {
       }
     } finally {
       setLoginLoading(false);
-      loginCaptchaRef.current?.resetCaptcha();
       setLoginCaptchaToken(null);
+      if (loginCaptchaRef.current) {
+        loginCaptchaRef.current.resetCaptcha();
+      }
     }
   };
   
@@ -53,16 +65,26 @@ const AuthPage = () => {
     e.preventDefault();
     
     if (registerPassword !== registerPasswordConfirm) {
-      alert('Пароли не совпадают');
+      toast({
+        title: "Ошибка валидации",
+        description: "Пароли не совпадают",
+        variant: "destructive"
+      });
       return;
     }
     
     if (!registerCaptchaToken) {
-      alert('Пожалуйста, подтвердите, что вы не робот');
+      toast({
+        title: "Ошибка проверки",
+        description: "Пожалуйста, подтвердите, что вы не робот",
+        variant: "destructive"
+      });
+      setCaptchaError("Пожалуйста, подтвердите, что вы не робот");
       return;
     }
     
     setRegisterLoading(true);
+    setCaptchaError(null);
     
     try {
       const result = await signUp(registerEmail, registerPassword, registerName, registerCaptchaToken);
@@ -72,9 +94,16 @@ const AuthPage = () => {
       }
     } finally {
       setRegisterLoading(false);
-      registerCaptchaRef.current?.resetCaptcha();
       setRegisterCaptchaToken(null);
+      if (registerCaptchaRef.current) {
+        registerCaptchaRef.current.resetCaptcha();
+      }
     }
+  };
+
+  const handleCaptchaError = () => {
+    setCaptchaError("Произошла ошибка при загрузке капчи. Пожалуйста, перезагрузите страницу.");
+    console.error("hCaptcha error occurred");
   };
   
   return (
@@ -125,12 +154,16 @@ const AuthPage = () => {
                       required
                     />
                   </div>
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center">
                     <HCaptcha
                       ref={loginCaptchaRef}
                       sitekey="73a26fa0-3d7c-430a-bb06-2f5ca6bc56ea"
-                      onVerify={(token) => setLoginCaptchaToken(token)}
+                      onVerify={setLoginCaptchaToken}
+                      onError={handleCaptchaError}
+                      theme="light"
+                      size="normal"
                     />
+                    {captchaError && <p className="text-red-500 mt-2 text-sm">{captchaError}</p>}
                   </div>
                 </CardContent>
                 <CardFooter>
@@ -197,12 +230,16 @@ const AuthPage = () => {
                       required
                     />
                   </div>
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center">
                     <HCaptcha
                       ref={registerCaptchaRef}
                       sitekey="73a26fa0-3d7c-430a-bb06-2f5ca6bc56ea"
-                      onVerify={(token) => setRegisterCaptchaToken(token)}
+                      onVerify={setRegisterCaptchaToken}
+                      onError={handleCaptchaError}
+                      theme="light"
+                      size="normal"
                     />
+                    {captchaError && <p className="text-red-500 mt-2 text-sm">{captchaError}</p>}
                   </div>
                 </CardContent>
                 <CardFooter>
