@@ -103,10 +103,7 @@ export const fetchVolunteerProfile = async (userId: string): Promise<Volunteer |
 // Функция для входа в систему
 export const signIn = async (email: string, password: string, captchaToken: string) => {
   try {
-    console.log('Attempting login with email:', email);
-    console.log('Captcha token present:', !!captchaToken);
-    
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
       options: {
@@ -115,7 +112,6 @@ export const signIn = async (email: string, password: string, captchaToken: stri
     });
     
     if (error) {
-      console.error('Login error:', error);
       toast({
         title: 'Ошибка входа',
         description: error.message,
@@ -124,18 +120,16 @@ export const signIn = async (email: string, password: string, captchaToken: stri
       return { error };
     }
     
-    console.log('Login successful, user:', data.user?.id);
     toast({
       title: 'Успешный вход',
       description: 'Добро пожаловать в систему волонтерской помощи!',
     });
     
-    return { data };
+    return undefined;
   } catch (error) {
-    console.error('Unknown login error:', error);
     toast({
       title: 'Ошибка',
-      description: 'Произошла неизвестная ошибка при входе',
+      description: 'Произошла н��известная ошибка при входе',
       variant: 'destructive',
     });
     return { error };

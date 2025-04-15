@@ -1,5 +1,4 @@
 
-
 RewriteEngine On
 RewriteBase /
 RewriteRule ^index\.html$ - [L]
@@ -31,7 +30,7 @@ RewriteRule ^favicon\.ico$ - [F,L]
   Header always set Permissions-Policy "geolocation=(), camera=(), microphone=()"
   
   # Updated CSP to allow hCaptcha domains
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://cdn.gpteng.co https://*.hcaptcha.com; connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co https://static.cloudflareinsights.com https://*.hcaptcha.com https://newassets.hcaptcha.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.hcaptcha.com https://newassets.hcaptcha.com; font-src 'self';"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://cdn.gpteng.co https://*.hcaptcha.com; connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co https://static.cloudflareinsights.com https://*.hcaptcha.com https://newassets.hcaptcha.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.hcaptcha.com; font-src 'self';"
 </IfModule>
 
 # Enable caching
@@ -46,4 +45,3 @@ RewriteRule ^favicon\.ico$ - [F,L]
   ExpiresByType application/javascript "access plus 1 month"
   ExpiresByType application/json "access plus 0 seconds"
 </IfModule>
-
